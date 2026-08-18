@@ -1,0 +1,107 @@
+{
+  "name": "Campus AI — TNEA Counselling Recommendation System",
+  "version": "6.5.0",
+  "description": "Existing CAMPUS AI upgrade focused on false-positive-free NLP, complete default filter states, eligible-only recommendations, college-code lookup, official TNEA knowledge and sidebar conversation controls.",
+  "stack": {
+    "backend": "Python 3.13 + FastAPI + Uvicorn",
+    "frontend": "React 19 + Vite",
+    "data": "Supplied TNEA-Cleaned Dataset.csv (3,474 records / 438 colleges / 38 districts / 106 branches)"
+  },
+  "features": {
+    "chatbot": {
+      "languages": [
+        "English",
+        "Tamil",
+        "Tanglish"
+      ],
+      "intents": [
+        "recommend",
+        "calculate_cutoff",
+        "tnea_info",
+        "branch_list",
+        "district_list",
+        "greeting",
+        "help",
+        "thanks",
+        "bye",
+        "reset"
+      ],
+      "entities": [
+        "cutoff",
+        "community",
+        "district",
+        "branch",
+        "subject_marks"
+      ],
+      "context_memory": true,
+      "slot_filling": true,
+      "follow_ups": true,
+      "fuzzy_matching": "controlled; never fuzzy-matches arbitrary prose to branch catalogue",
+      "natural_language_layer": "optional Groq LLM with strict evidence grounding",
+      "college_search": "fuzzy dataset retrieval",
+      "comparisons": [
+        "college vs college",
+        "branch vs branch"
+      ],
+      "college_type": "Government / Government-aided / University Department / Autonomous / Private filtering from dataset-supported classification",
+      "conversation_tools": [
+        "previous conversations",
+        "new chat",
+        "clear chat",
+        "share/copy",
+        "delete",
+        "three-dot action menu"
+      ],
+      "abbreviation_support": "TNEA branch codes and common English/Tamil/Tanglish abbreviations",
+      "default_context": {
+        "community": "OC",
+        "district": "ALL",
+        "branch": "ALL",
+        "college_type": "ALL"
+      },
+      "branch_aliases": "AI/AI&DS/AIDS/AI & DS/Data Science/Artificial Intelligence and Data Science; AIML/AI&ML/AI & ML/Artificial Intelligence and Machine Learning; plus common TNEA codes and full names"
+    },
+    "cutoff_formula": "Mathematics + Physics/2 + Chemistry/2",
+    "recommendation": {
+      "source": "dataset_only",
+      "never_hides_eligible": true,
+      "na_handling": "records without a published cutoff shown separately",
+      "limit": "10000 records per response; dataset contains 3474 records"
+    },
+    "ui": [
+      "home",
+      "college_finder",
+      "cutoff_calculator",
+      "ai_counsellor_chat",
+      "chat_sidebar"
+    ],
+    "responsive": true,
+    "offline_preview": true
+  },
+  "endpoints": [
+    "/api/health",
+    "/api/meta",
+    "/api/stats",
+    "/api/calculate-cutoff",
+    "/api/recommend",
+    "/api/chat",
+    "/api/chat/reset"
+  ],
+  "deliverables": [
+    "fastapi_backend",
+    "react_frontend",
+    "processed_dataset",
+    "nlp_engine",
+    "cutoff_calculator",
+    "college_finder",
+    "offline_preview",
+    "render_deploy_config"
+  ],
+  "official_sources": [
+    "https://www.tneaonline.org/",
+    "https://static.tneaonline.org/docs/2_Information_Brochure_2026.pdf",
+    "https://static.tneaonline.org/docs/TNEA_Tentative_Schedule_2026.pdf",
+    "https://static.tneaonline.org/docs/4_Instructions_for_Registration_in_English_2026.pdf",
+    "https://cac.annauniv.edu/aidetails/ai_ug_courses.html"
+  ]
+}

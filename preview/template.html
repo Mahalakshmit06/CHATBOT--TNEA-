@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Campus AI — TNEA Counselling (Preview)</title>
+<style>
+:root{
+  --bg:#f4f6fb; --surface:#fff; --ink:#0b1220; --muted:#5b6478; --line:#e4e8f1;
+  --p:#3b4fd8; --p2:#6356e8; --p3:#0ea5e9;
+  --grad:linear-gradient(120deg,#3b4fd8,#6356e8 55%,#8b5cf6);
+  --ok:#0f8a5f; --na:#94a3b8; --r:18px;
+  --head:"Sora",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--body)}
+.wrap{max-width:960px;margin:0 auto;padding:24px 18px 60px}
+.top{display:flex;align-items:center;gap:12px;margin-bottom:20px;background:linear-gradient(180deg,#fbfcff,#eef1fb);border:1px solid var(--line);border-radius:18px;padding:16px 18px}
+.mark{width:44px;height:44px;border-radius:13px;background:var(--grad);color:#fff;font-weight:800;font-family:var(--head);display:grid;place-items:center;box-shadow:0 6px 20px rgba(59,79,216,.25)}
+.top h1{font-family:var(--head);font-size:20px;margin:0}
+.top small{color:var(--muted)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.tabs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 18px;font-family:var(--body);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s ease}
+.tabs button:hover{border-color:var(--p);color:var(--p)}
+.tabs button.on{background:var(--grad);color:#fff;border-color:transparent}
+.panel{display:none}
+.panel.on{display:block;animation:up .4s ease}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.chat{background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:0 24px 70px rgba(15,23,42,.12);overflow:hidden;display:flex;flex-direction:column}
+.msgs{height:380px;overflow-y:auto;overscroll-behavior:contain;padding:20px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+.m{display:flex;gap:10px;align-items:flex-start}
+.m.u{justify-content:flex-end}
+.av{flex:0 0 32px;height:32px;border-radius:10px;background:var(--grad);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
+.b{max-width:80%;font-size:14.5px;line-height:1.5;padding:11px 15px;border-radius:16px;white-space:pre-line}
+.m.u .b{background:var(--grad);color:#fff;border-radius:16px 16px 4px 16px}
+.m.ai .b{background:#f1f5f9;border:1px solid var(--line);border-radius:16px 16px 16px 4px}
+.profile{display:flex;gap:8px;flex-wrap:wrap;margin:12px 20px 0}
+.chip{background:#edf1ff;border:1px solid #dfe5ff;color:var(--p);font-size:12.5px;padding:5px 11px;border-radius:999px}
+.quick{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px 4px}
+.quick button{border:1px solid var(--line);background:#f8faff;font-size:12.5px;padding:7px 13px;border-radius:999px;cursor:pointer;font-family:var(--body);transition:all .15s ease}
+.quick button:hover{border-color:var(--p);color:var(--p);background:#edf1ff}
+.composer{display:flex;gap:10px;padding:14px 16px;border-top:1px solid var(--line)}
+.composer input{flex:1;border:1px solid var(--line);border-radius:999px;padding:12px 18px;font-size:14.5px;font-family:var(--body);outline:none;transition:border-color .15s ease}
+.composer input:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(59,79,216,.12)}
+.composer button{border:0;border-radius:999px;padding:12px 24px;background:var(--grad);color:#fff;font-weight:600;cursor:pointer;box-shadow:0 8px 20px rgba(59,79,216,.3)}
+.recs{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.rec{background:#fff;border:1px solid var(--line);border-left:4px solid var(--ok);border-radius:12px;padding:11px 14px}
+.rec.na{border-left-color:var(--na)}
+.rec b{display:block;font-size:14px;line-height:1.4;margin-bottom:3px}
+.rec small{color:var(--muted);font-size:12.5px}
+.more{border:1px dashed #c7d2fe;background:#f8faff;color:var(--p);font-weight:600;padding:10px;border-radius:12px;cursor:pointer}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 6px 20px rgba(15,23,42,.08);padding:22px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field span{font-size:12.5px;font-weight:600;color:var(--muted)}
+.field input,.field select{border:1px solid var(--line);border-radius:11px;padding:11px 13px;font-size:14px;font-family:var(--body);outline:none;transition:border-color .15s ease}
+.field input:focus,.field select:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(59,79,216,.12)}
+button.primary{border:0;border-radius:999px;padding:13px 24px;background:var(--grad);color:#fff;font-weight:600;font-size:14.5px;cursor:pointer;width:100%;box-shadow:0 8px 20px rgba(59,79,216,.3)}
+.result{border-radius:var(--r);padding:22px;background:var(--grad);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 24px 70px rgba(59,79,216,.25)}
+.result b{font-family:var(--head);font-size:56px;line-height:1.1}
+.result small{opacity:.85}
+.note{font-size:12.5px;color:var(--muted);text-align:center;margin-top:18px}
+@media(max-width:640px){.g2{grid-template-columns:1fr}.b{max-width:92%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="mark">CA</span>
+    <div>
+      <h1>Campus AI — TNEA Counselling</h1>
+      <small>Static preview · dataset embedded · no server required</small>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button data-p="chat" class="on">AI Counsellor</button>
+    <button data-p="finder">College Finder</button>
+    <button data-p="calc">Cutoff Calculator</button>
+  </div>
+
+  <!-- CHAT -->
+  <div id="p-chat" class="panel on">
+    <div class="chat">
+      <div class="msgs" id="msgs">
+        <div class="m ai"><span class="av">CA</span><div class="b">Vanakkam! 👋 I'm Campus AI. Tell me your cutoff and preferences (English, தமிழ் or Tanglish) and I'll list every eligible college from the embedded TNEA dataset.</div></div>
+      </div>
+      <div class="profile" id="profile"></div>
+      <div class="quick">
+        <button>My cutoff is 180, BC, CSE, Chennai</button>
+        <button>Enakku 175 cutoff iruku, Chennai la ECE venum</button>
+        <button>maths 90 physics 80 chemistry 85</button>
+        <button>MBC 185 cutoff, AI & DS, Coimbatore</button>
+      </div>
+      <div class="composer">
+        <input id="input" placeholder="Ask your TNEA question…" />
+        <button id="send">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINDER -->
+  <div id="p-finder" class="panel">
+    <div class="card">
+      <div class="grid g2">
+        <div class="field"><span>Cutoff (out of 200)</span><input type="number" id="f-cut" min="0" max="200" placeholder="e.g. 180" /></div>
+        <div class="field"><span>Community</span><select id="f-comm">
+          <option>OC</option><option>BC</option><option>BCM</option><option>MBC</option><option>SC</option><option>SCA</option><option>ST</option>
+        </select></div>
+        <div class="field"><span>District</span><select id="f-dist"><option value="ALL">All districts</option></select></div>
+        <div class="field"><span>Branch</span><select id="f-br"><option value="ALL">All branches</option></select></div>
+      </div>
+      <button class="primary" id="f-go">Find matching colleges →</button>
+      <div class="recs" id="f-res" style="margin-top:18px"></div>
+    </div>
+  </div>
+
+  <!-- CALC -->
+  <div id="p-calc" class="panel">
+    <div class="grid g2">
+      <div class="card">
+        <div class="field"><span>Mathematics</span><input type="number" id="c-m" min="0" max="100" placeholder="0 – 100" /></div>
+        <div class="field"><span>Physics</span><input type="number" id="c-p" min="0" max="100" placeholder="0 – 100" /></div>
+        <div class="field"><span>Chemistry</span><input type="number" id="c-c" min="0" max="100" placeholder="0 – 100" /></div>
+        <button class="primary" id="c-go">Calculate cutoff</button>
+      </div>
+      <div class="result" id="c-res"><span>Your TNEA cutoff</span><b>—</b><small>out of 200 · Maths + Phys/2 + Chem/2</small></div>
+    </div>
+  </div>
+
+  <p class="note">This is a self-contained product preview with the TNEA dataset embedded for offline interaction. The full project includes a FastAPI backend with a richer NLP engine, session memory, fuzzy matching and a React frontend.</p>
+</div>
+
+<script>
+/* __DATA__ */
+
+const COMMUNITIES=["OC","BC","BCM","MBC","SC","SCA","ST"];
+const DISTS=[...new Set(RECORDS.map(r=>r.district).filter(Boolean))].sort();
+const BRANCHES=[...new Set(RECORDS.map(r=>r.branch))].sort();
+const ALIAS={
+  cse:"COMPUTER SCIENCE AND ENGINEERING", cs:"COMPUTER SCIENCE AND ENGINEERING",
+  "computer science":"COMPUTER SCIENCE AND ENGINEERING",
+  ece:"ELECTRONICS AND COMMUNICATION ENGINEERING",
+  eee:"ELECTRICAL AND ELECTRONICS ENGINEERING",
+  it:"INFORMATION TECHNOLOGY",
+  "ai ds":"ARTIFICIAL INTELLIGENCE AND DATA SCIENCE","aids":"ARTIFICIAL INTELLIGENCE AND DATA SCIENCE",
+  "ai&ds":"ARTIFICIAL INTELLIGENCE AND DATA SCIENCE",
+  mech:"MECHANICAL ENGINEERING","mechanical":"MECHANICAL ENGINEERING",
+  civil:"CIVIL ENGINEERING",
+  cyber:"COMPUTER SCIENCE AND ENGINEERING (CYBER SECURITY)",
+  "cyber security":"COMPUTER SCIENCE AND ENGINEERING (CYBER SECURITY)",
+  biotech:"BIO TECHNOLOGY","biotechnology":"BIO TECHNOLOGY",
+  biomedical:"BIO MEDICAL ENGINEERING",bme:"BIO MEDICAL ENGINEERING",
+  aero:"AERONAUTICAL ENGINEERING",aeronautical:"AERONAUTICAL ENGINEERING",
+  mechatronics:"MECHATRONICS ENGINEERING",robotics:"ROBOTICS AND AUTOMATION",
+  chemical:"CHEMICAL ENGINEERING","food tech":"FOOD TECHNOLOGY",vlsi:"ELECTRONICS ENGINEERING (VLSI DESIGN AND TECHNOLOGY)"
+};
+const DIAL={
+  madras:"CHENNAI",kovai:"COIMBATORE",trichy:"TIRUCHIRAPPALLI",nellai:"TIRUNELVELI",
+  tanjore:"THANJAVUR",tuticorin:"THOOTHUKUDI",kanyakumari:"KANNIYAKUMARI",
+  kancheepuram:"KANCHIPURAM",villupuram:"VILUPPURAM",kallakuruchi:"KALLAKURICHI",
+  "salem":"SALEM","madurai":"MADURAI","chennai":"CHENNAI","coimbatore":"COIMBATORE"
+};
+const COM={
+  general:"OC",open:"OC",oc:"OC","backward class":"BC","backward classes":"BC",bc:"BC",
+  bcm:"BCM","bc muslim":"BCM","most backward":"MBC",mbc:"MBC",
+  "scheduled caste":"SC",sc:"SC",sca:"SCA",arunthathiyar:"SCA",
+  "scheduled tribe":"ST",st:"ST"
+};
+const norm=s=>String(s||"").toLowerCase().replace(/[^a-z0-9\u0B80-\u0BFF&\s]/g," ").replace(/\s+/g," ").trim();
+function detectCutoff(t){
+  let n=norm(t);
+  let p=[/(?:cutoff|cut\s*off|score|mark)\s*(?:is|of|=|:)?\s*(\d{1,3}(?:\.\d+)?)/,
+         /(\d{1,3}(?:\.\d+)?)\s*(?:cutoff|cut[\s-]*off|mark|score)\b/,
+         /(?:got|scored|secured|have|my)\s*(?:a\s+)?(\d{1,3}(?:\.\d+)?)\s*(?:cutoff|mark|score)?/];
+  for(let rx of p){let m=n.match(rx);if(m){let v=+m[1];if(v>=0&&v<=200)return v}}
+  if(/^\d{1,3}(\.\d+)?$/.test(n)){let v=+n;return v>=0&&v<=200?v:null}
+  return null;
+}
+function detectComm(t){
+  let n=norm(t);
+  for(let k in COM){let a=norm(k);if(a&&new RegExp("\\b"+a+"\\b").test(n))return COM[k]}
+  if(n.includes("பிற்படுத்த"))return n.includes("முஸ்லிம்")?"BCM":"BC";
+  if(n.includes("மிகவும்"))return "MBC";
+  if(n.includes("பட்டியல்"))return "SC";
+  return null;
+}
+function detectDist(t){
+  let n=norm(t);
+  for(let k in DIAL){let a=norm(k);if(a&&new RegExp("\\b"+a+"\\b").test(n))return DIAL[k]}
+  for(let d of DISTS){if(n.includes(norm(d)))return d}
+  return null;
+}
+function detectBranch(t){
+  let n=norm(t);
+  for(let k in ALIAS){let a=norm(k);if(a&&new RegExp("\\b"+a+"\\b").test(n))return ALIAS[k]}
+  for(let b of BRANCHES){if(n.includes(norm(b)))return b}
+  return null;
+}
+function detectMarks(t){
+  let n=norm(t),m={};
+  let pat={maths:[/maths?/],physics:[/physics/],chemistry:[/chem(?:istry)?/]};
+  for(let k in pat){let m2=n.match(pat[k][0]);if(m2){
+    // find number near label
+    let nums=n.replace(pat[k][0]," ").match(/\d{1,3}(?:\.\d+)?/g)||[];
+    // simpler: 'maths 90' or '90 in maths'
+    let rx=new RegExp(pat[k][0].source+"\\s*(?:is|of|=|:)?\\s*(\\d{1,3}(?:\\.\\d+)?)");
+    let mm=n.match(rx);
+    if(mm){m[k]=+mm[1]}
+  }}
+  return Object.keys(m).length>=2?m:null;
+}
+let profile={cutoff:null,community:null,district:null,branch:null};
+function recommend(cut,comm,dist,br,limit){
+  comm=comm||"OC";
+  let out=[],na=[];
+  for(let r of RECORDS){
+    if(dist&&dist!=="ALL"&&r.d!==dist)continue;
+    if(br&&br!=="ALL"&&!r.b.toUpperCase().includes(br))continue;
+    let v=r.closing[comm];
+    if(v==null)na.push(r);
+    else if(cut>=v)out.push({...r,margin:+ (cut-v).toFixed(2),status:v>=cut-3?"Edge":v>=cut-10?"Good match":"Strong match"});
+  }
+  out.sort((a,b)=>a.margin-b.margin);
+  return {eligible:out,na,count:out.length};
+}
+function fmtRec(r,comm,na){
+  let el=!na;
+  let closingVal=r.closing? r.closing[comm] : r.closing;
+  let html='<div class="rec'+(el?"":" na")+'"><b>'+r.n.replace(/&/g,"&amp;")+'</b>';
+  html+='<small>'+r.d+' · '+r.b+(el?(' · Closing <b>'+closingVal+'</b> · margin <b>+'+r.margin+'</b>'):(' · no '+comm+' cutoff'))+'</small></div>';
+  return html;
+}
+/* ---------- chat ---------- */
+const msgs=document.getElementById("msgs"),inp=document.getElementById("input");
+function push(role,text){let d=document.createElement("div");d.className="m "+role;
+  let b=document.createElement("div");b.className="b";b.textContent=text;
+  if(role==="ai"){let a=document.createElement("span");a.className="av";a.textContent="CA";d.appendChild(a)}
+  d.appendChild(b);msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;return d;}
+function renderProfile(){
+  let el=document.getElementById("profile");el.innerHTML="";
+  let items=[["Cutoff",profile.cutoff],["Community",profile.community],["District",profile.district],["Branch",profile.branch]].filter(x=>x[1]!=null&&x[1]!=="ALL");
+  items.forEach(([k,v])=>{let s=document.createElement("span");s.className="chip";s.innerHTML="<b>"+k+":</b> "+v;el.appendChild(s)});
+}
+function askNext(){
+  if(profile.cutoff==null)return "Please share your cutoff (out of 200), e.g. \"180\" or \"my cutoff is 172.5\". கட்ஆஃப்பைச் சொல்லுங்கள்.";
+  if(profile.community==null)return "Which community? (OC / BC / BCM / MBC / SC / SCA / ST)";
+  return null;
+}
+function respond(q){
+  let n=norm(q);
+  let cutoff=detectCutoff(q);if(cutoff!=null)profile.cutoff=cutoff;
+  let comm=detectComm(q);if(comm)profile.community=comm;
+  let dist=detectDist(q);if(dist)profile.district=dist;
+  let br=detectBranch(q);if(br)profile.branch=br;
+  let marks=detectMarks(q);
+  renderProfile();
+  if(/reset|restart|fresh/.test(n)){profile={cutoff:null,community:null,district:null,branch:null};renderProfile();return "Started fresh! Tell me your cutoff and preferences to begin. 🎓"}
+  if(/documents|document|certificate|12th|hall ticket/.test(n))return "Typical TNEA documents: 12th/HSC mark sheet, +2 hall ticket (age proof), community certificate (if claiming BC/BCM/MBC/SC/ST), income certificate for fee concession, TC and Aadhaar. Check the official TNEA notice for the exact list for your category.";
+  if(/allotment|round|choice filling/.test(n))return "TNEA happens in multiple rounds. You fill college+branch choices in preference order; based on your cutoff rank you're alloted your highest preferred choice with an available seat for your community. After each round you accept, slide or surrender.";
+  if(/eligib|pass|compulsory/.test(n))return "General eligibility: pass in HSC/+2 with Mathematics and Physics and Chemistry, or a vocational course with Mathematics. Admission is purely by cutoff — no entrance exam. Minimum ~40% in Maths and Physics+Chemistry for general, relaxed for reserved communities.";
+  if(/reservation|quota|community reservation/.test(n))return "Tamil Nadu reservation: OC 31%, BC 26.5%, BCM 3.5%, MBC & DNC 20%, SC 15% (SCA 3%), ST 1%, EBC 2%. Cutoffs differ per community. This app uses government-quota cutoffs from the supplied dataset.";
+  if(/fee|fees|hostel|tuition|cost|rupees/.test(n))return "Fees depend on college type (government / aided / self-financing). The supplied dataset does NOT include fees, hostel or transport figures, so Campus AI does not invent them.";
+  if(/which|branch|course/.test(n)&&br==null)return "The dataset covers "+BRANCHES.length+" branches including CSE, ECE, EEE, IT, AI & DS, Mechanical, Civil, Bio Technology and more.";
+  if(marks&&cutoff==null&&!n.includes("cutoff")){let v=+(marks.maths+marks.physics/2+marks.chemistry/2).toFixed(2);profile.cutoff=v;renderProfile();
+    let extra=askNext();return "Your cutoff is "+v+" = "+marks.maths+" + ("+marks.physics+" ÷ 2) + ("+marks.chemistry+" ÷ 2).\n"+(extra||"Let me find colleges for this cutoff.")}
+  let ask=askNext();
+  if(ask)return ask;
+  let r=recommend(profile.cutoff,profile.community,profile.district,profile.branch,2000);
+  let head="For cutoff "+profile.cutoff+", "+profile.community+", "+((profile.district&&profile.district!=="ALL")?profile.district:"all districts")+", "+((profile.branch&&profile.branch!=="ALL")?profile.branch:"all branches")+", I found "+r.count+" eligible college-branch matches."+(r.na.length?("\n"+r.na.length+" more don't publish a "+profile.community+" cutoff — shown separately, never hidden."):"")+"\nEvery eligible result is listed below — nothing is hidden.";
+  push("ai",head);
+  let recs=document.createElement("div");recs.className="recs";
+  [...r.eligible,...r.na].slice(0,30).forEach(x=>recs.innerHTML+=fmtRec(x,profile.community,x.na!==undefined));
+  let msg=msgs.lastChild;msg.appendChild(recs);
+  return null;
+}
+function send(){
+  let q=inp.value.trim();if(!q)return;inp.value="";
+  push("u",q);
+  let t=setTimeout(()=>{let r=respond(q);if(r)push("ai",r);},350);
+}
+document.getElementById("send").onclick=send;
+inp.addEventListener("keydown",e=>{if(e.key==="Enter")send()});
+document.querySelectorAll(".quick button").forEach(b=>b.onclick=()=>{inp.value=b.textContent;send()});
+/* ---------- tabs ---------- */
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll(".panel").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");document.getElementById("p-"+b.dataset.p).classList.add("on");
+});
+/* ---------- finder ---------- */
+let fd=document.getElementById("f-dist"),fb=document.getElementById("f-br");
+DISTS.forEach(d=>{let o=document.createElement("option");o.value=d;o.textContent=d;fd.appendChild(o)});
+BRANCHES.forEach(b=>{let o=document.createElement("option");o.value=b;o.textContent=b;fb.appendChild(o)});
+document.getElementById("f-go").onclick=()=>{
+  let cut=+document.getElementById("f-cut").value,comm=document.getElementById("f-comm").value;
+  let dist=fd.value,br=fb.value;
+  let r=recommend(cut,comm,dist,br,2000);
+  let el=document.getElementById("f-res");
+  if(!cut||cut<=0){el.innerHTML='<div class="rec"><b>Enter your cutoff first.</b></div>';return}
+  el.innerHTML='<div class="rec"><b>'+r.count+' eligible records</b><small>· '+(r.na.length? r.na.length+" without a published "+comm+" cutoff · ":"")+' closing cutoff ≤ your cutoff</small></div>';
+  [...r.eligible,...r.na].slice(0,40).forEach(x=>el.innerHTML+=fmtRec(x,comm,false));
+};
+/* ---------- calc ---------- */
+document.getElementById("c-go").onclick=()=>{
+  let m=+document.getElementById("c-m").value,p=+document.getElementById("c-p").value,c=+document.getElementById("c-c").value;
+  let el=document.getElementById("c-res");
+  if([m,p,c].some(x=>isNaN(x))){el.innerHTML="<span>Enter all three marks</span><b>—</b>";return}
+  let v=(m+p/2+c/2).toFixed(2);
+  el.innerHTML="<span>Your TNEA cutoff</span><b>"+v+"</b><small>out of 200 · Maths + Phys/2 + Chem/2</small>";
+};
+</script>
+</body>
+</html>
